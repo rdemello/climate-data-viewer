@@ -1,0 +1,9 @@
+node_modules
+remote-types
+.DS_Store
+dist
+dist-ssr
+*.local
+.eslintcache
+package.json
+package-lock.json
