@@ -2,13 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const apiRouter = require('./lib/router.cjs');
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
 
 const { PORT = 3002 } = process.env;
 const app = express();
-
-const swaggerDocument = YAML.load('./api-docs/swagger.yaml');
 
 // Middleware
 app.use(express.json());
@@ -18,9 +14,6 @@ app.use(
         credentials: true,
     }),
 );
-
-// Serve Swagger UI with API documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Serve API requests from the router
 app.use('/api', apiRouter);
