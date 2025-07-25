@@ -1,10 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const apiRouter = require('./lib/router.cjs');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import apiRouter from './lib/router.mjs';
 
-const { PORT = 3002 } = process.env;
 const app = express();
+const { PORT = 3002 } = process.env;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Middleware
 app.use(express.json());

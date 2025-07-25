@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import 'zustand/middleware/immer';
+import { immer } from 'zustand/middleware/immer';
 
 type ImmerStateCreator<T> = StateCreator<
     T,
@@ -8,6 +8,16 @@ type ImmerStateCreator<T> = StateCreator<
     T
 >;
 
-export interface SliceStore {}
+export interface SliceStore {
+    selectedYear: number;
+    setSelectedYear: (year: number) => void;
+    baselineChange: string;
+    setBaselineChange: (change: string) => void;
+}
 
-export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({});
+export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
+    selectedYear: 2080,
+    setSelectedYear: (year) => set({ selectedYear: year }),
+    baselineChange: 'Absolute',
+    setBaselineChange: (change) => set({ baselineChange: change }),
+});

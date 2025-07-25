@@ -12,7 +12,8 @@
         "useDefineForClassFields": true,
         "baseUrl": "./",
         "paths": {
-            "*": ["*", "types/*", "remote-types/*"]
+            "*": ["*", "types/*", "remote-types/*"],
+            "react": [ "./node_modules/@types/react" ]
         }
     },
     "include": ["src"]
