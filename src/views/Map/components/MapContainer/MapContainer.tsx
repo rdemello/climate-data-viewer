@@ -7,7 +7,7 @@ import { Map } from 'react-map-gl/maplibre';
 import { BASEMAP } from '@deck.gl/carto';
 import { HexagonLayer, HexagonLayerPickingInfo } from '@deck.gl/aggregation-layers';
 import { MS } from 'src/stores/masterStore';
-import { fileExtension } from 'src/utils/function';
+import { fileExtension, getBaseUrl } from 'src/utils/function';
 import {MjolnirEvent} from 'mjolnir.js';
 
 const INITIAL_VIEW_STATE: MapViewState = {
@@ -27,17 +27,14 @@ const MapContainer: React.FC = () => {
     const [jsonData, setJsonData] = useState([]);
     const [fileName, setFileName] = useState<string>('')
 
-
     const { data, error, isLoading } = useFetchData('map-data', fileName);
     
-
     useEffect(() => {
         const fileExt = fileExtension(selectedYear, baselineChange);
         setFileName(fileExt);
     }, [selectedYear, baselineChange, data]);
 
     useEffect(() => {
-        console.log(data)
         if (!isLoading && data) {
             console.log(data.features[0]);
             const mappedData = data.features.map((feature: any) => ({
@@ -49,44 +46,50 @@ const MapContainer: React.FC = () => {
     }, [data]);
 
     const alphaVal = 0.8;
+    const blueColorRange = [
+        new Uint8ClampedArray([173, 216, 230, alphaVal * 255]), // light blue
+        new Uint8ClampedArray([160, 210, 235, alphaVal * 255]),
+        new Uint8ClampedArray([148, 204, 240, alphaVal * 255]),
+        new Uint8ClampedArray([135, 206, 250, alphaVal * 255]), // lighter blue
+        new Uint8ClampedArray([120, 190, 235, alphaVal * 255]),
+        new Uint8ClampedArray([105, 175, 220, alphaVal * 255]),
+        new Uint8ClampedArray([90, 160, 205, alphaVal * 255]),
+        new Uint8ClampedArray([70, 130, 180, alphaVal * 255]), // steel blue
+        new Uint8ClampedArray([50, 120, 200, alphaVal * 255]),
+        new Uint8ClampedArray([40, 132, 220, alphaVal * 255]),
+        new Uint8ClampedArray([30, 144, 255, alphaVal * 255]), // dodger blue
+        new Uint8ClampedArray([20, 100, 230, alphaVal * 255]),
+        new Uint8ClampedArray([10, 60, 215, alphaVal * 255]),
+        new Uint8ClampedArray([0, 0, 205, alphaVal * 255]), // medium blue
+        new Uint8ClampedArray([0, 0, 180, alphaVal * 255]),
+        new Uint8ClampedArray([0, 0, 160, alphaVal * 255]),
+        new Uint8ClampedArray([0, 0, 139, alphaVal * 255]), // dark blue
+    ];
+
+
+    const commonHexLayerProps = {
+        gpuAggregation: true,
+        extruded: true,
+        getPosition: (d: any) => d.coordinates,
+        getColorWeight: (d: any) => d.value,
+        getElevationWeight: (d: any) => d.value,
+        radius: 5500,
+        elevationScale: 2,
+        elevationRange: [-5000, 20000] as [number, number],
+        pickable: true,
+        coverage: 1,
+        colorAggregation: 'MAX' as const,
+        elevationAggregation: 'MAX' as const,
+        colorScaleType: 'linear' as const,
+        colorRange: blueColorRange,
+        colorDomain: [500, 3200] as [number, number], // Adjust based on your data range
+    };
 
     const layers = [
         new HexagonLayer({
-            id: 'HexagonLayer',
+            id: 'Data layer',
             data: jsonData,
-            gpuAggregation: true,
-            extruded: true,
-            getPosition: (d) => d.coordinates,
-            getColorWeight: (d) => d.value,
-            getElevationWeight: (d) => d.value,
-            radius: 5000,
-            elevationScale: 2,
-            elevationRange: [-5000, 20000],
-            pickable: true,
-            coverage: 1,
-            colorAggregation: 'MAX',
-            elevationAggregation: 'MAX',
-            colorScaleType: 'linear',
-            
-            colorRange: [
-                [173, 216, 230, alphaVal * 255], // light blue
-                [160, 210, 235, alphaVal * 255],
-                [148, 204, 240, alphaVal * 255],
-                [135, 206, 250, alphaVal * 255], // lighter blue
-                [120, 190, 235, alphaVal * 255],
-                [105, 175, 220, alphaVal * 255],
-                [90, 160, 205, alphaVal * 255],
-                [70, 130, 180, alphaVal * 255], // steel blue
-                [50, 120, 200, alphaVal * 255],
-                [40, 132, 220, alphaVal * 255],
-                [30, 144, 255, alphaVal * 255], // dodger blue
-                [20, 100, 230, alphaVal * 255],
-                [10, 60, 215, alphaVal * 255],
-                [0, 0, 205, alphaVal * 255], // medium blue
-                [0, 0, 180, alphaVal * 255],
-                [0, 0, 160, alphaVal * 255],
-                [0, 0, 139, alphaVal * 255], // dark blue
-            ],
+            ...commonHexLayerProps,
         }),
     ];
 
@@ -109,7 +112,7 @@ const MapContainer: React.FC = () => {
 
     return (
         <>
-            {!isLoading && data && (
+    
                 <DeckGL
                     initialViewState={INITIAL_VIEW_STATE}
                     controller
@@ -120,7 +123,7 @@ const MapContainer: React.FC = () => {
                     <Map mapStyle={BASEMAP.DARK_MATTER} />
                     <ZoomWidget />
                 </DeckGL>
-            )}
+            
         </>
     );
 };

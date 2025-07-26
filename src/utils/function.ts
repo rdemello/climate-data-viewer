@@ -8,9 +8,9 @@ export const getBaseUrl = () => {
 export const fileExtension = (year:number, baseline:string) => {
   if (baseline === 'Absolute') {
     year = year - 1980; // Adjust year for absolute data
-    return `PR_abs_3day_band_${year}`;
+    return `PR_Absolute_YearlySum_Clipped_band_${year}`;
   } else {
     year = year - 1995; // Adjust year for change data
-    return `PR_change_3day_band_${year}`;
+    return `PR_Change_YearlySum_Clipped_band_${year}`;
   }
 }
