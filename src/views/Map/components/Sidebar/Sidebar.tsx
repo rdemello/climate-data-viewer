@@ -1,61 +1,154 @@
 import { MS } from 'src/stores/masterStore';
 import './Sidebar.scss';
-import Select from "react-select";
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 import { useState } from 'react';
+import PillComponent from '../Pill/Pill';
 
-interface YearOption{
+interface YearOption {
     value: number;
     label: string;
 }
 
-interface TypeOption{
+interface TypeOption {
     value: string;
     label: string;
 }
 
 const Sidebar: React.FC = () => {
-    const selectedYear = MS.use.selectedYear();
     const setSelectedYear = MS.getState().setSelectedYear;
     const selectChange = MS.use.baselineChange();
     const setBaselineChange = MS.getState().setBaselineChange;
+    const selectedMetric = MS.use.metric();
+    const setMetric = MS.getState().setMetric;
 
-    const yearOptions: YearOption[] = [
-        { value: 2030, label: '2030' },
-        { value: 2050, label: '2050' },
-        { value: 2080, label: '2080' },
-    ];
-
-    const baselineOptions: TypeOption[] = [
-        { value: 'Absolute', label: 'Absolute' },
-        { value: 'Change', label: 'Change' },
-    ];
-
-    const handleYearOption = (selection: YearOption | null) => {
+    const handleMetricOption = (selection: string) => {
         if (selection) {
-            setSelectedYear(selection.value);
+            setMetric(selection);
         }
     };
 
-    const handleBaselineOption = (selection: TypeOption | null) => {
+    const handleYearOption = (selection: number) => {
         if (selection) {
-            setBaselineChange(selection.value);
+            setSelectedYear(selection);
+        }
+    };
+
+    const handleBaselineOption = (selection: string) => {
+        if (selection) {
+            setBaselineChange(selection);
         }
     };
 
     return (
         <div className="map-sidebar">
+            <h1>Climate Projections</h1>
+            <p className="description">
+                Use the controls below to select different metrics to see how
+                the climate is changing under RCP8.5.
+            </p>
+            <p className="subtitle">Metric</p>
+            <p className="description">
+                The metrics below have been processed from UKCP18 data available
+                from the Met Office. They represent indicators for how
+                precipitation and high temperatures are changing in the future.
+            </p>
+            <p className="metric-subtitle">Precipitation</p>
+            <div className="pill-container">
+                <PillComponent
+                    name={'Annual Rainfall'}
+                    val={'YearlySum'}
+                    active={selectedMetric === 'YearlySum'}
+                    onClick={handleMetricOption}
+                />
+                <PillComponent
+                    name={'Wettest Day'}
+                    val={'MaxPR'}
+                    active={selectedMetric === 'MaxPR'}
+                    onClick={handleMetricOption}
+                />
+                <PillComponent
+                    name={'Wettest 3 Day Period'}
+                    val={'3day'}
+                    active={selectedMetric === '3day'}
+                    onClick={handleMetricOption}
+                />
+            </div>
             <p className="subtitle">Year</p>
-            <Select
-                options={yearOptions}
-                value={{value: selectedYear, label: String(selectedYear)}}
-                onChange={handleYearOption}
-            />
+            <p className="description">
+                Use the slider to see the changes across different years up to
+                2080.
+            </p>
+            <br></br>
+            <div className="slider-wrap">
+                <Slider
+                    min={2030}
+                    max={2080}
+                    step={10}
+                    dots={true}
+                    marks={{
+                        2030: {
+                            style: {
+                                color: 'white',
+                            },
+                            label: 2030,
+                        },
+                        2040: {
+                            style: {
+                                color: 'white',
+                            },
+                            label: 2040,
+                        },
+                        2050: {
+                            style: {
+                                color: 'white',
+                            },
+                            label: 2050,
+                        },
+                        2060: {
+                            style: {
+                                color: 'white',
+                            },
+                            label: 2060,
+                        },
+                        2070: {
+                            style: {
+                                color: 'white',
+                            },
+                            label: 2070,
+                        },
+                        2080: {
+                            style: {
+                                color: 'white',
+                            },
+                            label: 2080,
+                        },
+                    }}
+                    onChange={(v) => handleYearOption(v as number)}
+                />
+            </div>
+
+            <br></br>
+            <br></br>
             <p className="subtitle">Value</p>
-            <Select
-                options={baselineOptions}
-                value={{value: selectChange, label: selectChange}}
-                onChange={handleBaselineOption}
-            />
+            <p className="description">
+                Visualise either the absolute value of the metric, or the
+                changes from a baseline period average from 1980 to 1995.
+            </p>
+            <div className="pill-container">
+                <PillComponent
+                    name={'Absolute'}
+                    val={'Absolute'}
+                    active={selectChange === 'Absolute'}
+                    onClick={handleBaselineOption}
+                />
+                <PillComponent
+                    name={'Change from baseline'}
+                    val={'Change'}
+                    active={selectChange === 'Change'}
+                    onClick={handleBaselineOption}
+                />
+            </div>
         </div>
     );
 };

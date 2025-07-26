@@ -5,10 +5,14 @@ import { useFetchData } from 'src/hooks/useFetchData';
 import { ZoomWidget } from '@deck.gl/react';
 import { Map } from 'react-map-gl/maplibre';
 import { BASEMAP } from '@deck.gl/carto';
-import { HexagonLayer, HexagonLayerPickingInfo } from '@deck.gl/aggregation-layers';
+import {
+    HexagonLayer,
+    HexagonLayerPickingInfo,
+} from '@deck.gl/aggregation-layers';
 import { MS } from 'src/stores/masterStore';
-import { fileExtension, getBaseUrl } from 'src/utils/function';
-import {MjolnirEvent} from 'mjolnir.js';
+import { colourDomains, colourRanges, fileExtension, getBaseUrl } from 'src/utils/function';
+import { MjolnirEvent } from 'mjolnir.js';
+import Legend from '../Legend/Legend';
 
 const INITIAL_VIEW_STATE: MapViewState = {
     longitude: -1.796974,
@@ -24,15 +28,20 @@ type DataType = {
 const MapContainer: React.FC = () => {
     const selectedYear = MS.use.selectedYear();
     const baselineChange = MS.use.baselineChange();
+    const selectedMetric = MS.use.metric();
     const [jsonData, setJsonData] = useState([]);
-    const [fileName, setFileName] = useState<string>('')
+    const [fileName, setFileName] = useState<string>('');
 
     const { data, error, isLoading } = useFetchData('map-data', fileName);
-    
+
     useEffect(() => {
-        const fileExt = fileExtension(selectedYear, baselineChange);
+        const fileExt = fileExtension(
+            selectedYear,
+            baselineChange,
+            selectedMetric,
+        );
         setFileName(fileExt);
-    }, [selectedYear, baselineChange, data]);
+    }, [selectedYear, baselineChange, selectedMetric, data]);
 
     useEffect(() => {
         if (!isLoading && data) {
@@ -45,27 +54,6 @@ const MapContainer: React.FC = () => {
         }
     }, [data]);
 
-    const alphaVal = 0.8;
-    const blueColorRange = [
-        new Uint8ClampedArray([173, 216, 230, alphaVal * 255]), // light blue
-        new Uint8ClampedArray([160, 210, 235, alphaVal * 255]),
-        new Uint8ClampedArray([148, 204, 240, alphaVal * 255]),
-        new Uint8ClampedArray([135, 206, 250, alphaVal * 255]), // lighter blue
-        new Uint8ClampedArray([120, 190, 235, alphaVal * 255]),
-        new Uint8ClampedArray([105, 175, 220, alphaVal * 255]),
-        new Uint8ClampedArray([90, 160, 205, alphaVal * 255]),
-        new Uint8ClampedArray([70, 130, 180, alphaVal * 255]), // steel blue
-        new Uint8ClampedArray([50, 120, 200, alphaVal * 255]),
-        new Uint8ClampedArray([40, 132, 220, alphaVal * 255]),
-        new Uint8ClampedArray([30, 144, 255, alphaVal * 255]), // dodger blue
-        new Uint8ClampedArray([20, 100, 230, alphaVal * 255]),
-        new Uint8ClampedArray([10, 60, 215, alphaVal * 255]),
-        new Uint8ClampedArray([0, 0, 205, alphaVal * 255]), // medium blue
-        new Uint8ClampedArray([0, 0, 180, alphaVal * 255]),
-        new Uint8ClampedArray([0, 0, 160, alphaVal * 255]),
-        new Uint8ClampedArray([0, 0, 139, alphaVal * 255]), // dark blue
-    ];
-
 
     const commonHexLayerProps = {
         gpuAggregation: true,
@@ -74,15 +62,15 @@ const MapContainer: React.FC = () => {
         getColorWeight: (d: any) => d.value,
         getElevationWeight: (d: any) => d.value,
         radius: 5500,
-        elevationScale: 2,
+        elevationScale: 5,
         elevationRange: [-5000, 20000] as [number, number],
         pickable: true,
         coverage: 1,
         colorAggregation: 'MAX' as const,
         elevationAggregation: 'MAX' as const,
         colorScaleType: 'linear' as const,
-        colorRange: blueColorRange,
-        colorDomain: [500, 3200] as [number, number], // Adjust based on your data range
+        colorRange: colourRanges.PR["colorRange"],
+        colorDomain: colourDomains.PR[baselineChange][selectedMetric],
     };
 
     const layers = [
@@ -112,18 +100,17 @@ const MapContainer: React.FC = () => {
 
     return (
         <>
-    
-                <DeckGL
-                    initialViewState={INITIAL_VIEW_STATE}
-                    controller
-                    layers={layers}
-                    getTooltip={getTooltip}
-                    onClick={onClick}
-                >
-                    <Map mapStyle={BASEMAP.DARK_MATTER} />
-                    <ZoomWidget />
-                </DeckGL>
-            
+            <DeckGL
+                initialViewState={INITIAL_VIEW_STATE}
+                controller={{touchRotate: true}}
+                layers={layers}
+                getTooltip={getTooltip}
+                onClick={onClick}
+            >
+                <Map mapStyle={BASEMAP.DARK_MATTER} />
+                <ZoomWidget />
+            </DeckGL>
+            <Legend colourDomains={colourDomains.PR[baselineChange][selectedMetric]} colourRange={colourRanges.PR["colorRange"]} />
         </>
     );
 };

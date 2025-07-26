@@ -1,0 +1,27 @@
+
+.pill{
+    padding:10px 20px;
+    border-radius:20px;
+    border: 3px solid #aaa;
+    color:#fff;
+    transition: .2s all ease-in-out;
+    -webkit-user-select:none;
+    user-select:none;
+    cursor: pointer;
+    &:hover {
+        background-color: #f0f0f0;
+        color: #000;
+        cursor: pointer;
+        transition: .2s all ease-in-out;
+    }
+}
+
+.pill.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    &:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        color: #fff;
+    }
+}

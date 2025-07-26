@@ -13,6 +13,8 @@ export interface SliceStore {
     setSelectedYear: (year: number) => void;
     baselineChange: string;
     setBaselineChange: (change: string) => void;
+    metric: string;
+    setMetric: (metric: string) => void;
 }
 
 export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
@@ -20,4 +22,6 @@ export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
     setSelectedYear: (year) => set({ selectedYear: year }),
     baselineChange: 'Absolute',
     setBaselineChange: (change) => set({ baselineChange: change }),
+    metric: 'MaxPR',
+    setMetric: (metric) => set({ metric }),
 });

@@ -21,6 +21,7 @@ export const useFetchData = (endpoint: string, filename: string) => {
             const data = await response.json();
             return JSON.parse(data.message);
         },
+        staleTime: 60 * 60 * 1000
     });
 
     return { data, error, isLoading };
