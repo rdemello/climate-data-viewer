@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { GeoJSONData } from 'src/types/spatial';
 import { getBaseUrl } from 'src/utils/function';
 
 export const useFetchData = (endpoint: string, filename: string) => {
@@ -19,7 +20,8 @@ export const useFetchData = (endpoint: string, filename: string) => {
                 );
             }
             const data = await response.json();
-            return JSON.parse(data.message);
+            const geojsonData: GeoJSONData = JSON.parse(data.message)
+            return geojsonData;
         },
         staleTime: 60 * 60 * 1000
     });

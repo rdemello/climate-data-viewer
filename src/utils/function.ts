@@ -1,3 +1,5 @@
+import { GeoJSONData } from "src/types/spatial";
+
 export const getBaseUrl = () => {
   if (process.env.NODE_ENV === 'development') {
     return 'http://localhost:3002';
@@ -37,7 +39,7 @@ export const colourDomains: ColourDomains = {
     }
   }
 }
-const alphaVal = 0.8;
+const alphaVal = 1;
 interface ColourRange {
   colorRange: Uint8ClampedArray[];
 }
@@ -63,4 +65,24 @@ export const colourRanges: { [key: string]: ColourRange } = {
         new Uint8ClampedArray([0, 0, 139, alphaVal * 255]), // dark blue
     ]
   }
+}
+
+export const checkCoordinates = (coordinates: [number, number], data: GeoJSONData | undefined) => {
+    let closestFeature = null;
+    let minDistance = Infinity;
+
+    if (!data) return null;
+
+    for (const feature of data.features) {
+        const [x, y] = feature.geometry.coordinates[0][0];
+        const distance = Math.sqrt(
+            Math.pow(x - coordinates[0], 2) + Math.pow(y - coordinates[1], 2)
+        );
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestFeature = feature;
+        }
+    }
+
+    return closestFeature?.geometry.coordinates[0][0] || null;
 }
