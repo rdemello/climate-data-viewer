@@ -1,12 +1,14 @@
-import MapContainer from "./components/MapContainer/MapContainer";
-import Sidebar from "./components/Sidebar/Sidebar";
+import MapContainer from './components/MapContainer/MapContainer';
+import Sidebar from './components/Sidebar/Sidebar';
+import './MapView.scss';
 
-
-const MapView:React.FC = () => {
+const MapView: React.FC = () => {
     const content = (
         <>
-        <Sidebar />
-            <MapContainer />
+            <div className="map-wrap">
+                <Sidebar />
+                <MapContainer />
+            </div>
         </>
     );
 

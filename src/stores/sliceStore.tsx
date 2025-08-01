@@ -11,17 +11,17 @@ type ImmerStateCreator<T> = StateCreator<
 export interface SliceStore {
     selectedYear: number;
     setSelectedYear: (year: number) => void;
-    baselineChange: string;
-    setBaselineChange: (change: string) => void;
     metric: string;
     setMetric: (metric: string) => void;
+    selectedCoordinates: string | null;
+    setSelectedCoordinates: (coordinates: string | null) => void;
 }
 
 export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
     selectedYear: 2080,
     setSelectedYear: (year) => set({ selectedYear: year }),
-    baselineChange: 'Absolute',
-    setBaselineChange: (change) => set({ baselineChange: change }),
     metric: 'MaxPR',
     setMetric: (metric) => set({ metric }),
+    selectedCoordinates: null,
+    setSelectedCoordinates: (coordinates) => set({ selectedCoordinates: coordinates }),
 });

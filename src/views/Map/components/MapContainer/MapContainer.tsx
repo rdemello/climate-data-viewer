@@ -3,56 +3,101 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFetchData } from 'src/hooks/useFetchData';
 import { ZoomWidget } from '@deck.gl/react';
 import { Map } from 'react-map-gl/maplibre';
-import { BASEMAP } from '@deck.gl/carto';
 import {
     HexagonLayer,
-    HexagonLayerPickingInfo,
 } from '@deck.gl/aggregation-layers';
 import { MS } from 'src/stores/masterStore';
 import {
-    checkCoordinates,
-    colourDomains,
-    colourRanges,
+    calculateColour,
+    coordFix,
     fileExtension,
 } from 'src/utils/function';
 import { MjolnirEvent } from 'mjolnir.js';
 import Legend from '../Legend/Legend';
 
 import {
+    colourDomains,
+    colourRanges,
     INITIAL_VIEW_STATE,
     lightingEffect,
     MAP_STYLE,
 } from './MapDeclarations';
+import InfoWindow from '../InfoWindow/InfoWindow';
+import { ColumnLayer } from 'node_modules/@deck.gl/layers/dist';
 
 const MapContainer: React.FC = () => {
     const selectedYear = MS.use.selectedYear();
-    const baselineChange = MS.use.baselineChange();
+    const setCoordinates = MS.getState().setSelectedCoordinates;
     const selectedMetric = MS.use.metric();
-    const [selectedHex, setSelectedHex] = useState<[number, number]>([0, 0]);
     const [jsonData, setJsonData] = useState<
         { coordinates: any; value: any }[]
     >([]);
-    const [fileName, setFileName] = useState<string>('');
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);;
-
+    const [fileName, setFileName] = useState<string>(`PR_MaxPR_100.geojson`);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const { data, error, isLoading } = useFetchData('map-data', fileName);
+    
+
+    useEffect(() => {
+        const fileExt = fileExtension(
+            selectedYear,
+            'Absolute',
+            selectedMetric,
+        );
+        setFileName(fileExt);
+    }, [selectedYear, 'Absolute', selectedMetric, data]);
+
+    useEffect(() => {
+        if (!isLoading && data) {
+            const mappedData = data.features
+                .map((feature: any, idx: number) => {
+                    const coords: [number, number][] =
+                        feature.geometry.coordinates[0][0];
+                    // const avg = coords.reduce(
+                    //     (acc, val) => [acc[0] + val[0], acc[1] + val[1]],
+                    //     [0, 0]
+                    // ).map(sum => sum / coords.length);
+                    return feature.properties.value !== null
+                        ? {
+                              coordinates: coords,
+                              value: feature.properties.value,
+                          }
+                        : null;
+                })
+                .filter(
+                    (item: any): item is { coordinates: any; value: any } =>
+                        item !== null,
+                );
+
+            setJsonData(mappedData);
+        }
+    }, [data]);
 
     const commonHexLayerProps = {
-        gpuAggregation: true,
+        // gpuAggregation: true,
         extruded: true,
         getPosition: (d: any) => d.coordinates,
         getColorWeight: (d: any) => d.value,
         getElevationWeight: (d: any) => d.value,
-        radius: 5500,
-        elevationScale: 5,
-        elevationRange: [-5000, 20000] as [number, number],
+        // getElevationValue: (d: any) => d.value,
+        getFillColor: (d: any): [number, number, number, number] => 
+            calculateColour(
+                d.value,
+                colourDomains.PR['Absolute'][selectedMetric],
+                colourRanges.BlueRed['colorRange'].map(
+                    (arr) =>
+                        Array.from(arr) as [number, number, number, number],
+                ),
+            ),
+        radius: 3500,
+        elevationScale: jsonData && jsonData.length ? 5 : 0,
+        elevationRange: [0, 20000] as [number, number],
         pickable: true,
         coverage: 0.7,
         colorAggregation: 'MAX' as const,
         elevationAggregation: 'MAX' as const,
-        colorScaleType: 'linear' as const,
-        colorRange: colourRanges.PR['colorRange'],
-        colorDomain: colourDomains.PR[baselineChange][selectedMetric],
+        // colorScaleType: 'linear' as const,
+        // colorRange: colourRanges.PR['colorRange'],
+        // colorDomain: colourDomains.PR['Absolute'][selectedMetric],
         highlightColor: [255, 255, 255, 255] as [
             number,
             number,
@@ -69,46 +114,78 @@ const MapContainer: React.FC = () => {
         },
         transitions: {
             elevationScale: 3000,
+            getElevationWeight: 1000,
+            getElevationValue: 1000,
+            getFillColor: 1000,
         },
-        // updateTriggers: {
-        //     getElevationWeight: [selec],
-        // },
     };
 
-    useEffect(() => {
-        const fileExt = fileExtension(
-            selectedYear,
-            baselineChange,
-            selectedMetric,
-        );
-        setFileName(fileExt);
-    }, [selectedYear, baselineChange, selectedMetric, data]);
+    const commonColumnLayerProps = {
+        diskResolution: 12 as number,
+        extruded: true,
+        radius: 2500 as number,
+        elevationScale: jsonData && jsonData.length ? 300 : 0,
+        elevationRange: [0, 20000] as [number, number],
+        getElevation: (d: any) => d.value,
+        getFillColor: (d: any): [number, number, number, number] => 
+            calculateColour(
+                d.value,
+                colourDomains.PR['Absolute'][selectedMetric],
+                colourRanges.PR['colorRange'].map(
+                    (arr) =>
+                        Array.from(arr) as [number, number, number, number],
+                ),
+            ),
 
-    useEffect(() => {
-        if (!isLoading && data) {
-            const mappedData = data.features.map(
-                (feature: any, idx: number) => ({
-                    coordinates: feature.geometry.coordinates[0][0],
-                    value: feature.properties.value,
-                }),
-            );
-            setJsonData(mappedData);
-        }
-    }, [data]);
+        getPosition: (d: any) => d.coordinates,
+        pickable: true,
+        coverage: 1,
+        filled:true,
+        highlightColor: [255, 255, 255, 255] as [
+            number,
+            number,
+            number,
+            number,
+        ],
+        autoHighlight: true,
+        highlightedObjectIndex: selectedIndex,
+        transitions: {
+            elevationScale: 3000,
+            getElevationWeight: 1000,
+            getElevationValue: 1000,
+            // getFillColor: 1000,
+        },
+    };
 
     const layers = [
-        new HexagonLayer({
-            id: 'Data layer',
+        new ColumnLayer({
+            id: 'Column Data layer',
+            visible: true,
+            data: jsonData,
+            ...commonColumnLayerProps,
+        }),
+         new HexagonLayer({
+            id: 'Hex Data layer',
+            visible: false,
             data: jsonData,
             ...commonHexLayerProps,
         }),
+
     ];
 
     const getTooltip = useCallback(
-        ({ object }: HexagonLayerPickingInfo<object>) => {
+        ({ object }: any) => {
             if (object) {
                 return {
-                    html: `<div> ${object.colorValue?.toFixed(2)} mm/day </div>`,
+                    // html: `<div>
+                    //     ${Object.entries(object)
+                    //         .map(
+                    //             ([key, value]) =>
+                    //                 `<div><strong>${key}:</strong> ${value}</div>`,
+                    //         )
+                    //         .join('')}
+                    // </div>`,
+                    html: `<div> ${object.value?.toFixed(2)} mm/day </div>`,
                     style: {
                         backgroundColor: '#111',
                         fontSize: '1em',
@@ -122,37 +199,37 @@ const MapContainer: React.FC = () => {
 
     const onClick = useCallback(
         (info: any, event: MjolnirEvent) => {
-            if (info && info.coordinate) {
-                // const closestCoordinate = checkCoordinates(
-                //     info.coordinate,
-                //     data,
-                // );
-                // if (!closestCoordinate) return;
-                // setSelectedHex(closestCoordinate);
+            if (info && info.object.coordinates) {
+
+                console.log(info)
                 setSelectedIndex(info.index);
+                let coords:string = coordFix(info.object.coordinates);
+                setCoordinates(coords);
+                console.log(coords)
             }
         },
-        [data], 
+        [data],
     );
 
     return (
-        <>
+        <div className="map-container">
             <DeckGL
                 initialViewState={INITIAL_VIEW_STATE}
                 controller={{ touchRotate: true }}
                 layers={layers}
                 getTooltip={getTooltip}
                 onClick={onClick}
-                effects={[lightingEffect]}
+                // effects={[lightingEffect]}
             >
                 <Map reuseMaps mapStyle={MAP_STYLE} />
                 <ZoomWidget />
             </DeckGL>
+            <InfoWindow />
             <Legend
-                colourDomains={colourDomains.PR[baselineChange][selectedMetric]}
-                colourRange={colourRanges.PR['colorRange']}
+                colourDomains={colourDomains.PR['Absolute'][selectedMetric]}
+                colourRange={colourRanges.BlueRed['colorRange']}
             />
-        </>
+        </div>
     );
 };
 

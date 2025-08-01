@@ -22,3 +22,10 @@ export interface GeoJSONData {
     };
     features: GeoJSONFeature[];
 }
+
+export interface GraphData {
+    [key: string]: {
+        [key: string]: number[];
+    };
+}
+

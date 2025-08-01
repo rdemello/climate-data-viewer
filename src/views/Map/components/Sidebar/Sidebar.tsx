@@ -17,8 +17,6 @@ interface TypeOption {
 
 const Sidebar: React.FC = () => {
     const setSelectedYear = MS.getState().setSelectedYear;
-    const selectChange = MS.use.baselineChange();
-    const setBaselineChange = MS.getState().setBaselineChange;
     const selectedMetric = MS.use.metric();
     const setMetric = MS.getState().setMetric;
 
@@ -34,19 +32,8 @@ const Sidebar: React.FC = () => {
         }
     };
 
-    const handleBaselineOption = (selection: string) => {
-        if (selection) {
-            setBaselineChange(selection);
-        }
-    };
-
     return (
         <div className="map-sidebar">
-            <h1>Climate Projections</h1>
-            <p className="description">
-                Use the controls below to select different metrics to see how
-                the climate is changing under RCP8.5.
-            </p>
             <p className="subtitle">Metric</p>
             <p className="description">
                 The metrics below have been processed from UKCP18 data available
@@ -84,6 +71,7 @@ const Sidebar: React.FC = () => {
                 <Slider
                     min={2030}
                     max={2080}
+                    defaultValue={2080}
                     step={10}
                     dots={true}
                     marks={{
@@ -130,7 +118,7 @@ const Sidebar: React.FC = () => {
 
             <br></br>
             <br></br>
-            <p className="subtitle">Value</p>
+            {/* <p className="subtitle">Value</p>
             <p className="description">
                 Visualise either the absolute value of the metric, or the
                 changes from a baseline period average from 1980 to 1995.
@@ -148,7 +136,7 @@ const Sidebar: React.FC = () => {
                     active={selectChange === 'Change'}
                     onClick={handleBaselineOption}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };

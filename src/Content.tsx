@@ -5,7 +5,12 @@ import WelcomeView from './views/Welcome/Welcome.view';
 
 function Content() {
     return (
-        <Router>
+        <Router
+            future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+            }}
+        >
             <Routes>
                 <Route path="/map" element={<MapView />} />
                 <Route path="/" element={<WelcomeView />} />
