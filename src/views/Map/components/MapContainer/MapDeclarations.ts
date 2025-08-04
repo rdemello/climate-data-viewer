@@ -48,9 +48,31 @@ interface ColourDomains {
 export const colourDomains: ColourDomains = {
     PR: {
         Absolute: {
-            YearlySum: [500, 3200] as [number, number],
-            MaxPR: [0, 100] as [number, number],
+            yearlySum: [500, 3200] as [number, number],
+            maxPR: [0, 100] as [number, number],
             '3day': [0, 200] as [number, number],
+            spi: [0, 2] as [number, number],
+            dry: [90, 250] as [number, number],
+        },
+    },
+};
+
+interface ElevationScales {
+    [key: string]: {
+        [key: string]: {
+            [key: string]: number;
+        };
+    };
+}
+
+export const elevationScales: ElevationScales = {
+    PR: {
+        Absolute: {
+            yearlySum: 20,
+            maxPR: 300,
+            '3day': 300,
+            spi: 10000,
+            dry: 100,
         },
     },
 };

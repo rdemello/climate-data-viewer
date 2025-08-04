@@ -14,7 +14,7 @@ export const fileExtension = (
 ) => {
     if (baseline === 'Absolute') {
         year = year - 1980; // Adjust year for absolute data
-        return `PR_${selectedMetric}_${year}.geojson`;
+        return `PR_med_${selectedMetric}_${year}.geojson`;
     } else {
         year = year - 1995; // Adjust year for change data
         return `PR_${selectedMetric}_${year}.geojson`;

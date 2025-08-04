@@ -8,7 +8,7 @@ interface LegendProps {
 const Legend: React.FC<LegendProps> = ({ colourDomains, colourRange }) => {
     return (
         <div className="legend">
-            {[...colourRange].reverse().map((color, idx) => {
+            {/* {[...colourRange].reverse().map((color, idx) => {
                 const [r, g, b, a = 255] = color;
                 const backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
                 const reversedIdx = colourRange.length - 1 - idx;
@@ -28,7 +28,7 @@ const Legend: React.FC<LegendProps> = ({ colourDomains, colourRange }) => {
                         )}
                     </div>
                 );
-            })}
+            })} */}
         </div>
     );
 };

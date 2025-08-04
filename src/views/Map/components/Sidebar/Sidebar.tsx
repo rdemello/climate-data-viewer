@@ -44,20 +44,32 @@ const Sidebar: React.FC = () => {
             <div className="pill-container">
                 <PillComponent
                     name={'Annual Rainfall'}
-                    val={'YearlySum'}
-                    active={selectedMetric === 'YearlySum'}
+                    val={'yearlySum'}
+                    active={selectedMetric === 'yearlySum'}
                     onClick={handleMetricOption}
                 />
                 <PillComponent
                     name={'Wettest Day'}
-                    val={'MaxPR'}
-                    active={selectedMetric === 'MaxPR'}
+                    val={'maxPR'}
+                    active={selectedMetric === 'maxPR'}
                     onClick={handleMetricOption}
                 />
                 <PillComponent
                     name={'Wettest 3 Day Period'}
                     val={'3day'}
                     active={selectedMetric === '3day'}
+                    onClick={handleMetricOption}
+                />
+                <PillComponent
+                    name={'Drought Risk (SPI)'}
+                    val={'spi'}
+                    active={selectedMetric === 'spi'}
+                    onClick={handleMetricOption}
+                />
+                <PillComponent
+                    name={'Dry Days'}
+                    val={'dry'}
+                    active={selectedMetric === 'dry'}
                     onClick={handleMetricOption}
                 />
             </div>

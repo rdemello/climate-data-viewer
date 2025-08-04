@@ -18,6 +18,7 @@ import Legend from '../Legend/Legend';
 import {
     colourDomains,
     colourRanges,
+    elevationScales,
     INITIAL_VIEW_STATE,
     lightingEffect,
     MAP_STYLE,
@@ -124,9 +125,9 @@ const MapContainer: React.FC = () => {
         diskResolution: 12 as number,
         extruded: true,
         radius: 2500 as number,
-        elevationScale: jsonData && jsonData.length ? 300 : 0,
+        elevationScale: jsonData && jsonData.length ? 1 : 0,
         elevationRange: [0, 20000] as [number, number],
-        getElevation: (d: any) => d.value,
+        getElevation: (d: any) => d.value * elevationScales.PR['Absolute'][selectedMetric],
         getFillColor: (d: any): [number, number, number, number] => 
             calculateColour(
                 d.value,
@@ -150,7 +151,7 @@ const MapContainer: React.FC = () => {
         autoHighlight: true,
         highlightedObjectIndex: selectedIndex,
         transitions: {
-            elevationScale: 3000,
+            // elevationScale: 1000,
             getElevationWeight: 1000,
             getElevationValue: 1000,
             // getFillColor: 1000,

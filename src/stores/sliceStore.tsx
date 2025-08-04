@@ -20,7 +20,7 @@ export interface SliceStore {
 export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
     selectedYear: 2080,
     setSelectedYear: (year) => set({ selectedYear: year }),
-    metric: 'MaxPR',
+    metric: 'maxPR',
     setMetric: (metric) => set({ metric }),
     selectedCoordinates: null,
     setSelectedCoordinates: (coordinates) => set({ selectedCoordinates: coordinates }),

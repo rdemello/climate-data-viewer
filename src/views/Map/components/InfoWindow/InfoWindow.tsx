@@ -9,39 +9,49 @@ interface InfoWindowProps {}
 const InfoWindow: React.FC<InfoWindowProps> = ({}) => {
     const selectedMetric = MS.use.metric();
     const {
-        data: graphData,
-        error: graphError,
-        isLoading: graphLoading,
-    } = useFetchGraphData('map-data', 'graph_data.json');
+        data: medGraphData,
+        error: medGraphError,
+        isLoading: medGraphLoading,
+    } = useFetchGraphData('map-data', 'graph_data_med.json');
     const selectedCoordinates = MS.use.selectedCoordinates();
 
     useEffect(() => {
-        if (!graphData || !selectedCoordinates) return;
-        console.log(graphData[selectedCoordinates]['PR_MaxPR']);
+        if (!medGraphData || !selectedCoordinates) return;
+        console.log(medGraphData[selectedCoordinates]['PR_MaxPR']);
         console.log('Selected Coordinates: ', selectedCoordinates);
-        console.log(graphData[selectedCoordinates]);
-    }, [graphData, selectedCoordinates]);
+        console.log(medGraphData[selectedCoordinates]);
+    }, [medGraphData, selectedCoordinates]);
     return (
         <div className="info-window">
             {selectedCoordinates == null && (
                 <p className="description">Select a location on the map</p>
             )}
-            {graphData && selectedCoordinates !== null && (
+            {medGraphData && selectedCoordinates !== null && (
                 <>
 
                         <ChartContainer
                             name={'Wettest Day'}
-                            data={graphData[selectedCoordinates]['PR_MaxPR']}
+                            data={medGraphData[selectedCoordinates]['PR_maxPR']}
                         />
 
                         <ChartContainer
                             name={'Wettest 3 Day Period'}
-                            data={graphData[selectedCoordinates]['PR_3day']}
+                            data={medGraphData[selectedCoordinates]['PR_3day']}
                         />
 
                         <ChartContainer
                             name={'Annual Rainfall'}
-                            data={graphData[selectedCoordinates]['PR_YearlySum']}
+                            data={medGraphData[selectedCoordinates]['PR_yearlySum']}
+                        />
+
+                        <ChartContainer
+                            name={'Drought Risk'}
+                            data={medGraphData[selectedCoordinates]['PR_spi']}
+                        />
+
+                        <ChartContainer
+                            name={'Dry days'}
+                            data={medGraphData[selectedCoordinates]['PR_dry']}
                         />
 
                 </>
