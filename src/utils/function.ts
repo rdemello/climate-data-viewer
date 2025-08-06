@@ -72,5 +72,46 @@ export const calculateColour = (
 };
 
 export const coordFix = (coord: number[]) => {
-  return "('" + coord[0].toFixed(10) + "', '" + coord[1].toFixed(10) + "')";
+    return "('" + coord[0].toFixed(10) + "', '" + coord[1].toFixed(10) + "')";
+};
+
+export const colourGradient = (
+    start: [number, number, number],
+    end: [number, number, number],
+    steps: number,
+    mid?: [number, number, number] | undefined,
+): Uint8ClampedArray[] => {
+    const gradient: Uint8ClampedArray[] = [];
+    if (mid) {
+        // Split steps between start-mid and mid-end
+        const half = Math.floor(steps / 2);
+        for (let i = 0; i < half; i++) {
+            const t = half === 1 ? 0 : i / (half - 1);
+            const r = Math.round(start[0] + (mid[0] - start[0]) * t);
+            const g = Math.round(start[1] + (mid[1] - start[1]) * t);
+            const b = Math.round(start[2] + (mid[2] - start[2]) * t);
+            gradient.push(new Uint8ClampedArray([r, g, b, 255]));
+        }
+        for (let i = 1; i < steps - half + 1; i++) {
+            const t = (steps - half) === 1 ? 0 : (i - 1) / (steps - half - 1);
+            const r = Math.round(mid[0] + (end[0] - mid[0]) * t);
+            const g = Math.round(mid[1] + (end[1] - mid[1]) * t);
+            const b = Math.round(mid[2] + (end[2] - mid[2]) * t);
+            gradient.push(new Uint8ClampedArray([r, g, b, 255]));
+        }
+        // Remove duplicate mid color if steps is even
+        if (steps % 2 === 0 && gradient.length > steps) {
+            gradient.splice(half, 1);
+        }
+        return gradient.slice(0, steps);
+    } else {
+        for (let i = 0; i < steps; i++) {
+            const t = steps === 1 ? 0 : i / (steps - 1);
+            const r = Math.round(start[0] + (end[0] - start[0]) * t);
+            const g = Math.round(start[1] + (end[1] - start[1]) * t);
+            const b = Math.round(start[2] + (end[2] - start[2]) * t);
+            gradient.push(new Uint8ClampedArray([r, g, b, 255]));
+        }
+        return gradient;
+    }
 };

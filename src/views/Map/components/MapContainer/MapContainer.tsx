@@ -1,11 +1,7 @@
 import { DeckGL } from '@deck.gl/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useFetchData } from 'src/hooks/useFetchData';
-import { ZoomWidget } from '@deck.gl/react';
 import { Map } from 'react-map-gl/maplibre';
-import {
-    HexagonLayer,
-} from '@deck.gl/aggregation-layers';
 import { MS } from 'src/stores/masterStore';
 import {
     calculateColour,
@@ -16,15 +12,12 @@ import { MjolnirEvent } from 'mjolnir.js';
 import Legend from '../Legend/Legend';
 
 import {
-    colourDomains,
-    colourRanges,
-    elevationScales,
     INITIAL_VIEW_STATE,
     lightingEffect,
     MAP_STYLE,
 } from './MapDeclarations';
-import InfoWindow from '../InfoWindow/InfoWindow';
 import { ColumnLayer } from 'node_modules/@deck.gl/layers/dist';
+import { metricsDict } from 'src/utils/metricsDict';
 
 const MapContainer: React.FC = () => {
     const selectedYear = MS.use.selectedYear();
@@ -73,66 +66,18 @@ const MapContainer: React.FC = () => {
         }
     }, [data]);
 
-    const commonHexLayerProps = {
-        // gpuAggregation: true,
-        extruded: true,
-        getPosition: (d: any) => d.coordinates,
-        getColorWeight: (d: any) => d.value,
-        getElevationWeight: (d: any) => d.value,
-        // getElevationValue: (d: any) => d.value,
-        getFillColor: (d: any): [number, number, number, number] => 
-            calculateColour(
-                d.value,
-                colourDomains.PR['Absolute'][selectedMetric],
-                colourRanges.BlueRed['colorRange'].map(
-                    (arr) =>
-                        Array.from(arr) as [number, number, number, number],
-                ),
-            ),
-        radius: 3500,
-        elevationScale: jsonData && jsonData.length ? 5 : 0,
-        elevationRange: [0, 20000] as [number, number],
-        pickable: true,
-        coverage: 0.7,
-        colorAggregation: 'MAX' as const,
-        elevationAggregation: 'MAX' as const,
-        // colorScaleType: 'linear' as const,
-        // colorRange: colourRanges.PR['colorRange'],
-        // colorDomain: colourDomains.PR['Absolute'][selectedMetric],
-        highlightColor: [255, 255, 255, 255] as [
-            number,
-            number,
-            number,
-            number,
-        ],
-        autoHighlight: true,
-        highlightedObjectIndex: selectedIndex,
-        material: {
-            ambient: 0.64 as number,
-            diffuse: 0.6 as number,
-            shininess: 32 as number,
-            specularColor: [51, 51, 51] as [number, number, number],
-        },
-        transitions: {
-            elevationScale: 3000,
-            getElevationWeight: 1000,
-            getElevationValue: 1000,
-            getFillColor: 1000,
-        },
-    };
-
     const commonColumnLayerProps = {
         diskResolution: 12 as number,
         extruded: true,
         radius: 2500 as number,
         elevationScale: jsonData && jsonData.length ? 1 : 0,
         elevationRange: [0, 20000] as [number, number],
-        getElevation: (d: any) => d.value * elevationScales.PR['Absolute'][selectedMetric],
+        getElevation: (d: any) => d.value * metricsDict[selectedMetric].elevationScale,
         getFillColor: (d: any): [number, number, number, number] => 
             calculateColour(
                 d.value,
-                colourDomains.PR['Absolute'][selectedMetric],
-                colourRanges.PR['colorRange'].map(
+                metricsDict[selectedMetric].colourDomain,
+                metricsDict[selectedMetric].colourRanges.map(
                     (arr) =>
                         Array.from(arr) as [number, number, number, number],
                 ),
@@ -154,7 +99,7 @@ const MapContainer: React.FC = () => {
             // elevationScale: 1000,
             getElevationWeight: 1000,
             getElevationValue: 1000,
-            // getFillColor: 1000,
+            // getFillColor: 500,
         },
     };
 
@@ -164,14 +109,7 @@ const MapContainer: React.FC = () => {
             visible: true,
             data: jsonData,
             ...commonColumnLayerProps,
-        }),
-         new HexagonLayer({
-            id: 'Hex Data layer',
-            visible: false,
-            data: jsonData,
-            ...commonHexLayerProps,
-        }),
-
+        })
     ];
 
     const getTooltip = useCallback(
@@ -186,7 +124,7 @@ const MapContainer: React.FC = () => {
                     //         )
                     //         .join('')}
                     // </div>`,
-                    html: `<div> ${object.value?.toFixed(2)} mm/day </div>`,
+                    html: `<div> ${object.value?.toFixed(2)} ${metricsDict[selectedMetric].units} </div>`,
                     style: {
                         backgroundColor: '#111',
                         fontSize: '1em',
@@ -195,18 +133,16 @@ const MapContainer: React.FC = () => {
             }
             return null;
         },
-        [],
+        [selectedMetric],
     );
 
     const onClick = useCallback(
         (info: any, event: MjolnirEvent) => {
             if (info && info.object.coordinates) {
 
-                console.log(info)
                 setSelectedIndex(info.index);
                 let coords:string = coordFix(info.object.coordinates);
                 setCoordinates(coords);
-                console.log(coords)
             }
         },
         [data],
@@ -223,12 +159,11 @@ const MapContainer: React.FC = () => {
                 // effects={[lightingEffect]}
             >
                 <Map reuseMaps mapStyle={MAP_STYLE} />
-                <ZoomWidget />
             </DeckGL>
-            <InfoWindow />
+            
             <Legend
-                colourDomains={colourDomains.PR['Absolute'][selectedMetric]}
-                colourRange={colourRanges.BlueRed['colorRange']}
+                colourDomains={metricsDict[selectedMetric].colourDomain}
+                colourRange={metricsDict[selectedMetric].colourRanges}
             />
         </div>
     );

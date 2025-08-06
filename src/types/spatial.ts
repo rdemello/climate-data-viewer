@@ -25,7 +25,9 @@ export interface GeoJSONData {
 
 export interface GraphData {
     [key: string]: {
-        [key: string]: number[];
+        [key: string]: {
+            [key: string]: number[];
+        };
     };
 }
 

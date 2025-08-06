@@ -1,5 +1,6 @@
 import { MapViewState } from 'node_modules/@deck.gl/core/dist/views/map-view';
 import { AmbientLight, PointLight, LightingEffect } from '@deck.gl/core';
+import { colourGradient } from 'src/utils/function';
 
 export const INITIAL_VIEW_STATE: MapViewState = {
     longitude: -2.415727,
@@ -37,89 +38,81 @@ export const lightingEffect = new LightingEffect({
     pointLight2,
 });
 
-interface ColourDomains {
-    [key: string]: {
-        [key: string]: {
-            [key: string]: [number, number];
-        };
-    };
-}
+// interface ColourDomains {
+//     [key: string]: {
+//         [key: string]: {
+//             [key: string]: [number, number];
+//         };
+//     };
+// }
 
-export const colourDomains: ColourDomains = {
-    PR: {
-        Absolute: {
-            yearlySum: [500, 3200] as [number, number],
-            maxPR: [0, 100] as [number, number],
-            '3day': [0, 200] as [number, number],
-            spi: [0, 2] as [number, number],
-            dry: [90, 250] as [number, number],
-        },
-    },
-};
+// export const colourDomains: ColourDomains = {
+//     PR: {
+//         Absolute: {
+//             yearlySum: [500, 3200] as [number, number],
+//             maxPR: [30, 100] as [number, number],
+//             '3day': [50, 200] as [number, number],
+//             spi: [0, 1.5] as [number, number],
+//             dry: [90, 220] as [number, number],
+//         },
+//     },
+// };
 
-interface ElevationScales {
-    [key: string]: {
-        [key: string]: {
-            [key: string]: number;
-        };
-    };
-}
+// interface ElevationScales {
+//     [key: string]: {
+//         [key: string]: {
+//             [key: string]: number;
+//         };
+//     };
+// }
 
-export const elevationScales: ElevationScales = {
-    PR: {
-        Absolute: {
-            yearlySum: 20,
-            maxPR: 300,
-            '3day': 300,
-            spi: 10000,
-            dry: 100,
-        },
-    },
-};
+// export const elevationScales: ElevationScales = {
+//     PR: {
+//         Absolute: {
+//             yearlySum: 20,
+//             maxPR: 300,
+//             '3day': 300,
+//             spi: 15000,
+//             dry: 150,
+//         },
+//     },
+// };
 
-const alphaVal = 1;
-interface ColourRange {
-    colorRange: Uint8ClampedArray[];
-}
-export const colourRanges: { [key: string]: ColourRange } = {
-    PR: {
-        colorRange: [
-            new Uint8ClampedArray([173, 216, 230, alphaVal * 255]), // light blue
-            new Uint8ClampedArray([160, 210, 235, alphaVal * 255]),
-            new Uint8ClampedArray([148, 204, 240, alphaVal * 255]),
-            new Uint8ClampedArray([135, 206, 250, alphaVal * 255]), // lighter blue
-            new Uint8ClampedArray([120, 190, 235, alphaVal * 255]),
-            new Uint8ClampedArray([105, 175, 220, alphaVal * 255]),
-            new Uint8ClampedArray([90, 160, 205, alphaVal * 255]),
-            new Uint8ClampedArray([70, 130, 180, alphaVal * 255]), // steel blue
-            new Uint8ClampedArray([50, 120, 200, alphaVal * 255]),
-            new Uint8ClampedArray([40, 132, 220, alphaVal * 255]),
-            new Uint8ClampedArray([30, 144, 255, alphaVal * 255]), // dodger blue
-            new Uint8ClampedArray([20, 100, 230, alphaVal * 255]),
-            new Uint8ClampedArray([10, 60, 215, alphaVal * 255]),
-            new Uint8ClampedArray([0, 0, 205, alphaVal * 255]), // medium blue
-            new Uint8ClampedArray([0, 0, 180, alphaVal * 255]),
-            new Uint8ClampedArray([0, 0, 160, alphaVal * 255]),
-            new Uint8ClampedArray([0, 0, 139, alphaVal * 255]), // dark blue
-        ],
-    },
-    BlueRed: {
-        colorRange: [
-            new Uint8ClampedArray([0, 0, 139, alphaVal * 255]), // dark blue
-            new Uint8ClampedArray([30, 30, 160, alphaVal * 255]),
-            new Uint8ClampedArray([60, 60, 180, alphaVal * 255]),
-            new Uint8ClampedArray([90, 90, 200, alphaVal * 255]),
-            new Uint8ClampedArray([120, 120, 220, alphaVal * 255]),
-            new Uint8ClampedArray([150, 150, 230, alphaVal * 255]),
-            new Uint8ClampedArray([180, 180, 240, alphaVal * 255]),
-            new Uint8ClampedArray([210, 210, 250, alphaVal * 255]),
-            new Uint8ClampedArray([220, 180, 180, alphaVal * 255]),
-            new Uint8ClampedArray([230, 150, 150, alphaVal * 255]),
-            new Uint8ClampedArray([240, 120, 120, alphaVal * 255]),
-            new Uint8ClampedArray([200, 90, 90, alphaVal * 255]),
-            new Uint8ClampedArray([180, 60, 60, alphaVal * 255]),
-            new Uint8ClampedArray([160, 30, 30, alphaVal * 255]),
-            new Uint8ClampedArray([139, 0, 0, alphaVal * 255]), // dark red
-        ],
-    },
-};
+// const BlueWhite = colourGradient([220, 231, 254], [0, 47, 97], 10);
+// const OrangeWhite = colourGradient([222, 222, 222], [224, 0, 0], 10, [237, 207, 7]);
+
+// export const keyColours: { [key: string]: [number, number, number] } = {
+//     PR: [0, 47, 97], // dark blue
+//     '3day': [0, 47, 97], // dark blue
+//     yearlySum: [0, 47, 97], // dark blue
+//     maxPR: [0, 47, 97], // dark blue
+//     spi: [224, 0, 0], // red
+//     dry: [224, 0, 0], // red
+// }
+
+// export const colourRanges: { [key: string]: Uint8ClampedArray[] } = {
+//     PR: [
+//         new Uint8ClampedArray([173, 216, 230, 255]), // light blue
+//         new Uint8ClampedArray([160, 210, 235, 255]),
+//         new Uint8ClampedArray([148, 204, 240, 255]),
+//         new Uint8ClampedArray([135, 206, 250, 255]), // lighter blue
+//         new Uint8ClampedArray([120, 190, 235, 255]),
+//         new Uint8ClampedArray([105, 175, 220, 255]),
+//         new Uint8ClampedArray([90, 160, 205, 255]),
+//         new Uint8ClampedArray([70, 130, 180, 255]), // steel blue
+//         new Uint8ClampedArray([50, 120, 200, 255]),
+//         new Uint8ClampedArray([40, 132, 220, 255]),
+//         new Uint8ClampedArray([30, 144, 255, 255]), // dodger blue
+//         new Uint8ClampedArray([20, 100, 230, 255]),
+//         new Uint8ClampedArray([10, 60, 215, 255]),
+//         new Uint8ClampedArray([0, 0, 205, 255]), // medium blue
+//         new Uint8ClampedArray([0, 0, 180, 255]),
+//         new Uint8ClampedArray([0, 0, 160, 255]),
+//     ],
+//     "3day": BlueWhite,
+//     "yearlySum": BlueWhite,
+//     "maxPR": BlueWhite,
+//     "spi": OrangeWhite,
+//     "dry": OrangeWhite,
+// };
+

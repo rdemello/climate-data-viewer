@@ -15,6 +15,8 @@ export interface SliceStore {
     setMetric: (metric: string) => void;
     selectedCoordinates: string | null;
     setSelectedCoordinates: (coordinates: string | null) => void;
+    graphData: any; // Replace 'any' with the actual type if known
+    setGraphData: (data: any) => void;
 }
 
 export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
@@ -24,4 +26,6 @@ export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
     setMetric: (metric) => set({ metric }),
     selectedCoordinates: null,
     setSelectedCoordinates: (coordinates) => set({ selectedCoordinates: coordinates }),
+    graphData: null,
+    setGraphData: (data) => set({ graphData: data }),
 });
