@@ -17,6 +17,10 @@ export interface SliceStore {
     setSelectedCoordinates: (coordinates: string | null) => void;
     graphData: any; // Replace 'any' with the actual type if known
     setGraphData: (data: any) => void;
+    selectedPostcode: string;
+    setSelectedPostcode: (postcode: string) => void;
+    selectedCounty: string;
+    setSelectedCounty: (county: string) => void;
 }
 
 export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
@@ -28,4 +32,8 @@ export const sliceStore: ImmerStateCreator<SliceStore> = (set) => ({
     setSelectedCoordinates: (coordinates) => set({ selectedCoordinates: coordinates }),
     graphData: null,
     setGraphData: (data) => set({ graphData: data }),
+    selectedPostcode: '',
+    setSelectedPostcode: (postcode) => set({ selectedPostcode: postcode }),
+    selectedCounty: '',
+    setSelectedCounty: (county) => set({ selectedCounty: county }),
 });

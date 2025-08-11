@@ -115,3 +115,10 @@ export const colourGradient = (
         return gradient;
     }
 };
+
+export const filterCoords = (coords:string): [number, number] => {
+    const parts = coords.split("'");
+    const filtered = parts.filter(part => part.trim().length > 5).map(Number);
+    const [x, y] = filtered;
+    return [x, y];
+};

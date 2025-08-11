@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import MapContainer from './components/MapContainer/MapContainer';
-import Sidebar from './components/Sidebar/Sidebar';
+import MetricSelection from './components/MetricSelection/MetricSelection';
 import './MapView.scss';
 import { MS } from 'src/stores/masterStore';
 import { useFetchGraphData } from 'src/hooks/useFetchData';
 import InfoWindow from './components/InfoWindow/InfoWindow';
+import YearSelection from './components/YearSelection/YearSelection';
 
 const MapView: React.FC = () => {
     const setGraphData = MS.getState().setGraphData;
@@ -25,7 +26,8 @@ const MapView: React.FC = () => {
     const content = (
         <>
             <div className="map-wrap">
-                <Sidebar />
+                <MetricSelection />
+                <YearSelection />
                 <MapContainer />
                 <InfoWindow />
             </div>

@@ -31,3 +31,12 @@ export interface GraphData {
     };
 }
 
+export interface OpenStreetMapData {
+    place_id: string;
+    address:{
+        postcode: string;
+        country: string;
+        [key: string]: string;
+    }
+}
+

@@ -1,0 +1,19 @@
+@import '../../../../styles/master';
+
+.year-selection{
+    position:absolute;
+    bottom:30px;
+    width:450px;
+    left:30px;
+    z-index: 1;
+    background-color: #111;
+    padding:20px 30px;
+    line-height:1.3;
+    border-radius:$borderRadius;
+    overflow-y: auto;
+
+    .slider-wrap{
+        width:90%;
+        margin:10px auto 20px auto;
+    }
+}

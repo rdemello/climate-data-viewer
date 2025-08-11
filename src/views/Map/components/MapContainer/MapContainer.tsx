@@ -7,6 +7,7 @@ import {
     calculateColour,
     coordFix,
     fileExtension,
+    filterCoords,
 } from 'src/utils/function';
 import { MjolnirEvent } from 'mjolnir.js';
 import Legend from '../Legend/Legend';
@@ -18,25 +19,23 @@ import {
 } from './MapDeclarations';
 import { ColumnLayer } from 'node_modules/@deck.gl/layers/dist';
 import { metricsDict } from 'src/utils/metricsDict';
+import { OpenStreetMapData } from 'src/types/spatial';
 
 const MapContainer: React.FC = () => {
     const selectedYear = MS.use.selectedYear();
     const setCoordinates = MS.getState().setSelectedCoordinates;
     const selectedMetric = MS.use.metric();
+    const setSelectedPostcode = MS.getState().setSelectedPostcode;
+    const setSelectedCounty = MS.getState().setSelectedCounty;
     const [jsonData, setJsonData] = useState<
         { coordinates: any; value: any }[]
     >([]);
     const [fileName, setFileName] = useState<string>(`PR_MaxPR_100.geojson`);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const { data, error, isLoading } = useFetchData('map-data', fileName);
-    
 
     useEffect(() => {
-        const fileExt = fileExtension(
-            selectedYear,
-            'Absolute',
-            selectedMetric,
-        );
+        const fileExt = fileExtension(selectedYear, 'Absolute', selectedMetric);
         setFileName(fileExt);
     }, [selectedYear, 'Absolute', selectedMetric, data]);
 
@@ -72,8 +71,9 @@ const MapContainer: React.FC = () => {
         radius: 2500 as number,
         elevationScale: jsonData && jsonData.length ? 1 : 0,
         elevationRange: [0, 20000] as [number, number],
-        getElevation: (d: any) => d.value * metricsDict[selectedMetric].elevationScale,
-        getFillColor: (d: any): [number, number, number, number] => 
+        getElevation: (d: any) =>
+            d.value * metricsDict[selectedMetric].elevationScale,
+        getFillColor: (d: any): [number, number, number, number] =>
             calculateColour(
                 d.value,
                 metricsDict[selectedMetric].colourDomain,
@@ -86,7 +86,7 @@ const MapContainer: React.FC = () => {
         getPosition: (d: any) => d.coordinates,
         pickable: true,
         coverage: 1,
-        filled:true,
+        filled: true,
         highlightColor: [255, 255, 255, 255] as [
             number,
             number,
@@ -109,7 +109,7 @@ const MapContainer: React.FC = () => {
             visible: true,
             data: jsonData,
             ...commonColumnLayerProps,
-        })
+        }),
     ];
 
     const getTooltip = useCallback(
@@ -139,10 +139,24 @@ const MapContainer: React.FC = () => {
     const onClick = useCallback(
         (info: any, event: MjolnirEvent) => {
             if (info && info.object.coordinates) {
-
                 setSelectedIndex(info.index);
-                let coords:string = coordFix(info.object.coordinates);
+                let coords: string = coordFix(info.object.coordinates);
                 setCoordinates(coords);
+                const [lon, lat] = [
+                    filterCoords(coords)[0],
+                    filterCoords(coords)[1],
+                ];
+                fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
+                )
+                    .then((res) => res.json())
+                    .then((addressData: OpenStreetMapData) => {
+                        if (addressData) {
+                            console.log(addressData);
+                            setSelectedPostcode(addressData.address.postcode);
+                            setSelectedCounty(addressData.address.county);
+                        }
+                    });
             }
         },
         [data],
@@ -160,7 +174,7 @@ const MapContainer: React.FC = () => {
             >
                 <Map reuseMaps mapStyle={MAP_STYLE} />
             </DeckGL>
-            
+
             <Legend
                 colourDomains={metricsDict[selectedMetric].colourDomain}
                 colourRange={metricsDict[selectedMetric].colourRanges}

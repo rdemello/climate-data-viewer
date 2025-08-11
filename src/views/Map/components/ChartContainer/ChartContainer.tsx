@@ -15,6 +15,7 @@ import { useEffect, useMemo } from 'react';
 import type { Chart } from 'chart.js';
 import { MS } from 'src/stores/masterStore';
 import { metricsDict } from 'src/utils/metricsDict';
+import StatsText from '../StatsText/StatsText';
 
 const plugin = {
     id: 'uniqueid5', //typescript crashes without id
@@ -65,18 +66,19 @@ interface ChartContainerProps {
     metric: string;
     code: string;
 }
-ChartJS.defaults.borderColor = '#555';
-ChartJS.defaults.color = '#fff';
+ChartJS.defaults.borderColor = '#444';
+ChartJS.defaults.color = '#ddd';
+ChartJS.defaults.font.family = 'Lato, sans-serif';
 
 const ChartContainer: React.FC<ChartContainerProps> = ({ name, metric, code }) => {
-    const years = ['2030', '2040', '2050', '2060', '2070', '2080'];
+    const years = ['1990','2000','2010','2020','2030', '2040', '2050', '2060', '2070', '2080'];
     const mainColor = 'rgba(75, 192, 192, 0.8)';
     const fadedColor = 'rgba(75, 192, 192, 0.2)';
     const graphData = MS.use.graphData();
     const selectedCoordinates = MS.use.selectedCoordinates();
 
     const theseOptions = {
-        // intersectLine: true,
+        intersectLine: true,
         responsive: true,
         elements: {
             point: {
@@ -94,6 +96,28 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ name, metric, code }) =
             title: {
                 display: false,
             },
+            tooltip: {
+                backgroundColor:"rgba(0,0,0,0.8)",
+                bodySpacing: 4,
+                padding: 8,
+                displayColors: false,
+                bodyFont: {
+                    size: 14,
+                    family: 'Lato, sans-serif',
+                    lineHeight: 1.5,
+                },
+                callbacks: {
+                    title: (context:any) => {
+                        return ""
+                    },
+                    label: (context:any) => {
+                        return context.dataset.label + ': ' + context.parsed.y.toFixed(metricsDict[code].rounding);
+                    },
+                    labelTextColor: function(context: any) {
+                        return context ? context.dataset.label === 'Med' ? '#fff' : '#bbb' : '#bbb';
+                    },
+                },
+            }
         },
         interaction: {
             intersect: false,
@@ -104,12 +128,30 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ name, metric, code }) =
                 title: {
                     display: true,
                     text: 'Year',
+                    font: {
+                        size: 14,
+                    }
+                },
+                ticks: {
+                    color: '#ddd',
+                    font: {
+                        size: 13,
+                    },
                 },
             },
             y: {
                 title: {
                     display: true,
-                    text: 'Value',
+                    text: metricsDict[code].units,
+                    font: {
+                        size: 14,
+                    }
+                },
+                ticks: {
+                    color: '#ddd',
+                    font: {
+                        size: 13,
+                    },
                 },
             },
         },
@@ -166,6 +208,7 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ name, metric, code }) =
             {selectedCoordinates && graphData && (
                 <>
                     <h3>{name}</h3>
+                    <StatsText med={medData} min={minData} max={maxData} metric={code}/>
                     <Line data={thisData} options={theseOptions} />
                 </>
             )}
