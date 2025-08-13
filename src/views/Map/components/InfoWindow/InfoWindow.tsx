@@ -36,12 +36,24 @@ const InfoWindow: React.FC<InfoWindowProps> = ({}) => {
         'Contribute to increase risk of flooding',
     ];
 
+    const heatDesc = [
+        'Increased risk of heatwaves',
+        'More days with temperatures above 30°C',
+        'Increased cooling degree days',
+    ];
+
+    const coldDesc = [
+        'Increased risk of frost',
+        'More days with temperatures below 0°C',
+        'Increased heating degree days',
+    ];
+
     return selectedCoordinates == null ? (
         <div className="info-window closed"></div>
     ) : (
         <div className="info-window">
             <div className="info-window-header">
-                <h2>Selected Location</h2>
+                <h3>Selected Location</h3>
                 <div className="select-geodata">
                     <div className="label-wrap">
                         <p className="label">Longitude: </p>
@@ -98,6 +110,55 @@ const InfoWindow: React.FC<InfoWindowProps> = ({}) => {
                         code: 'dry',
                         metric: 'PR_dry',
                     },
+                ]}
+            />
+
+            <MetricType
+                title={'Extreme Heat'}
+                description={heatDesc}
+                charts={[
+                    {
+                        name: 'Cooling Degree Days',
+                        code: 'cdd',
+                        metric: 'TAS_cdd',
+                    },
+                    {
+                        name: 'Maximum Temperature',
+                        code: 'maxT',
+                        metric: 'TAS_maxT',
+                    },
+                    {
+                        name: 'Heatwave Frequency',
+                        code: 'hwfreq',
+                        metric: 'TAS_hwfreq',
+                    },
+                    {
+                        name: 'Heatwave Length',
+                        code: 'hwlen',
+                        metric: 'TAS_hwlen',
+                    },
+                ]}
+            />
+
+            <MetricType
+                title={'Extreme Cold'}
+                description={coldDesc}
+                charts={[
+                    {
+                        name: 'Heating Degree Days',
+                        code: 'hdd',
+                        metric: 'TAS_hdd',
+                    },
+                    {
+                        name: 'Minimum Temperature',
+                        code: 'minT',
+                        metric: 'TAS_minT',
+                    },
+                    {
+                        name: 'Consecutive Frost Days',
+                        code: 'cfd',
+                        metric: 'TAS_cfd',
+                    }
                 ]}
             />
         </div>

@@ -20,15 +20,18 @@ const MapView: React.FC = () => {
         if (graphData && graphLoading === false) {
             setGraphData(graphData);
         }
-        console.log("loading graph data")
+        console.log('loading graph data');
     }, [graphData, graphLoading]);
 
     const content = (
         <>
             <div className="map-wrap">
-                <MetricSelection />
+
+                    <MetricSelection />
+
                 <YearSelection />
                 <MapContainer />
+
                 <InfoWindow />
             </div>
         </>

@@ -1,3 +1,4 @@
+import { metricsDict } from "src/utils/metricsDict";
 import ChartContainer from "../ChartContainer/ChartContainer";
 import './MetricType.scss';
 import {useState} from "react";

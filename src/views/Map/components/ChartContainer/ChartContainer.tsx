@@ -208,7 +208,8 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ name, metric, code }) =
             {selectedCoordinates && graphData && (
                 <>
                     <h3>{name}</h3>
-                    <StatsText med={medData} min={minData} max={maxData} metric={code}/>
+                    {/* <StatsText med={medData} min={minData} max={maxData} metric={code}/> */}
+                    <p className='description'>{metricsDict[code].description}</p>
                     <Line data={thisData} options={theseOptions} />
                 </>
             )}

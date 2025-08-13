@@ -7,17 +7,25 @@ export const getBaseUrl = () => {
     return ''; // Let it be relative in production
 };
 
+const prMetrics = [
+    'yearlySum',
+    'maxPR',
+    '3day',
+    'spi',
+    'dry',
+]
+
 export const fileExtension = (
     year: number,
     baseline: string,
     selectedMetric: string,
 ) => {
-    if (baseline === 'Absolute') {
-        year = year - 1980; // Adjust year for absolute data
+    year = year - 1980;
+    
+    if (prMetrics.includes(selectedMetric)) {
         return `PR_med_${selectedMetric}_${year}.geojson`;
     } else {
-        year = year - 1995; // Adjust year for change data
-        return `PR_${selectedMetric}_${year}.geojson`;
+        return `TAS_med_${selectedMetric}_${year}.geojson`;
     }
 };
 

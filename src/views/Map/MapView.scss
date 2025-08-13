@@ -1,3 +1,5 @@
+@import './../../styles/_master.scss';
+
 .map-wrap{
     // display: flex;
     // flex-direction: row;
@@ -5,4 +7,17 @@
     width: 100vh;
     min-width:100%;
     position:fixed;
+    .col-1{
+        z-index:1000;
+        position:fixed;
+        width:200px;
+        padding:20px;
+        height: calc(100vh - 60px);
+        top:30px;
+        left:30px;
+        // background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0) 100%);
+        background-color: $mainBGcolor;
+        border-radius: $borderRadius;
+    }
+
 }

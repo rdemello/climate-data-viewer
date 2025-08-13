@@ -72,7 +72,7 @@ const MapContainer: React.FC = () => {
         elevationScale: jsonData && jsonData.length ? 1 : 0,
         elevationRange: [0, 20000] as [number, number],
         getElevation: (d: any) =>
-            d.value * metricsDict[selectedMetric].elevationScale,
+            (d.value + metricsDict[selectedMetric].elevationOffset) * metricsDict[selectedMetric].elevationScale,
         getFillColor: (d: any): [number, number, number, number] =>
             calculateColour(
                 d.value,
@@ -163,7 +163,7 @@ const MapContainer: React.FC = () => {
     );
 
     return (
-        <div className="map-container">
+        <>
             <DeckGL
                 initialViewState={INITIAL_VIEW_STATE}
                 controller={{ touchRotate: true }}
@@ -179,7 +179,7 @@ const MapContainer: React.FC = () => {
                 colourDomains={metricsDict[selectedMetric].colourDomain}
                 colourRange={metricsDict[selectedMetric].colourRanges}
             />
-        </div>
+        </>
     );
 };
 

@@ -26,11 +26,11 @@ const StatsText: React.FC<StatsTextProps> = ({ med, min, max, metric }) => {
             {metricInfo.units}. There is an average uncertainty of +/- {' '}
             {avgUncertainty.toFixed(metricInfo.rounding)}% between the different
             climate models. */}
-
+{/* 
             The {metricInfo.fullName.toLowerCase()} is forecasted to {' '}
             {difference > 1 ? 'increase' : 'decrease'} by {' '}
             {difference.toFixed(0)}% with an average uncertainty of +/- {' '}
-            {avgUncertainty.toFixed(metricInfo.rounding)}%.
+            {avgUncertainty.toFixed(metricInfo.rounding)}%. */}
         </p>
     );
 };
